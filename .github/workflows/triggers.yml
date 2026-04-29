@@ -7,6 +7,9 @@ on:
       - 'src/**'
       - 'package*.json'
       - '.github/workflows/**'
+  pull_request:
+    branches: [ master ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   report:
@@ -19,3 +22,12 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Actor: ${{ github.actor }}"
           echo "SHA: ${{ github.sha }}"
+
+      - name: Pull request context
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "PR #: ${{ github.event.pull_request.number }}"
+          echo "Title: ${{ github.event.pull_request.title }}"
+          echo "Action: ${{ github.event.action }}"
+          echo "Base: ${{ github.event.pull_request.base.ref }}"
+          echo "Head: ${{ github.event.pull_request.head.ref }}"
