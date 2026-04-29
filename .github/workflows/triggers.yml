@@ -28,6 +28,8 @@ on:
         required: false
         type: string
         default: 'Manual run'
+  schedule:
+    - cron: '*/15 * * * *'
 
 jobs:
   report:
@@ -40,15 +42,7 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Actor: ${{ github.actor }}"
 
-      - name: Pull request context
-        if: github.event_name == 'pull_request'
+      - name: Scheduled run context
+        if: github.event_name == 'schedule'
         run: |
-          echo "PR #: ${{ github.event.pull_request.number }}"
-          echo "Action: ${{ github.event.action }}"
-
-      - name: Manual dispatch context
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "Environment: ${{ inputs.environment }}"
-          echo "Debug: ${{ inputs.debug }}"
-          echo "Message: ${{ inputs.message }}"
+          echo "Cron fired at $(date -u)"
