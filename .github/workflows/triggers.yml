@@ -28,8 +28,8 @@ on:
         required: false
         type: string
         default: 'Manual run'
-  schedule:
-    - cron: '*/15 * * * *'
+  repository_dispatch:
+    types: [ deploy-request, security-scan ]
 
 jobs:
   report:
@@ -42,7 +42,9 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Actor: ${{ github.actor }}"
 
-      - name: Scheduled run context
-        if: github.event_name == 'schedule'
+      - name: Repository dispatch context
+        if: github.event_name == 'repository_dispatch'
         run: |
-          echo "Cron fired at $(date -u)"
+          echo "Event type: ${{ github.event.action }}"
+          echo "Environment: ${{ github.event.client_payload.environment }}"
+          echo "Version: ${{ github.event.client_payload.version }}"
