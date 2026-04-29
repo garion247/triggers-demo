@@ -10,6 +10,24 @@ on:
   pull_request:
     branches: [ master ]
     types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [ staging, production, development ]
+      debug:
+        description: 'Enable verbose logging'
+        required: false
+        type: boolean
+        default: false
+      message:
+        description: 'Custom run message'
+        required: false
+        type: string
+        default: 'Manual run'
 
 jobs:
   report:
@@ -21,13 +39,16 @@ jobs:
           echo "Event: ${{ github.event_name }}"
           echo "Branch: ${{ github.ref_name }}"
           echo "Actor: ${{ github.actor }}"
-          echo "SHA: ${{ github.sha }}"
 
       - name: Pull request context
         if: github.event_name == 'pull_request'
         run: |
           echo "PR #: ${{ github.event.pull_request.number }}"
-          echo "Title: ${{ github.event.pull_request.title }}"
           echo "Action: ${{ github.event.action }}"
-          echo "Base: ${{ github.event.pull_request.base.ref }}"
-          echo "Head: ${{ github.event.pull_request.head.ref }}"
+
+      - name: Manual dispatch context
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Debug: ${{ inputs.debug }}"
+          echo "Message: ${{ inputs.message }}"
